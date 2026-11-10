@@ -1,113 +1,89 @@
-# CLASS Board
-#     PROPERTIES
-#         grid: Array of 9 spaces (indices 0 to 8)
+# START GAME
 #
-#     METHOD initialize()
-#         Set grid to [ " ", " ", " ", " ", " ", " ", " ", " ", " " ]
-#     END METHOD
+# // 1. SET UP THE BOARD
+# Create a list called BOARD with 9 empty spaces
 #
-#     METHOD display()
-#         Print grid rows separated by "|" and "-----------" lines
-#     END METHOD
+# // 2. SET UP THE PLAYERS
+# Ask Player 1 for their name and assign them "X"
+# Ask Player 2 for their name and assign them "O"
+# Set PLAYER_1_SCORE to 0
+# Set PLAYER_2_SCORE to 0
 #
-#     METHOD update_position(position, symbol)
-#         IF position is valid AND position is empty THEN
-#             grid[position] = symbol
-#             RETURN true
-#         ELSE
-#             RETURN false
-#         END IF
-#     END METHOD
+# // 3. MASTER GAME LOOP (For replays)
+# LOOP REPLAY_LOOP
+#     Clear the BOARD (make all 9 spaces empty again)
+#     Set CURRENT_PLAYER to Player 1
+#     Set GAME_OVER to false
 #
-#     METHOD is_full()
-#         RETURN true IF grid contains no empty spaces, ELSE false
-#     END METHOD
+#     // 4. MATCH TURN LOOP (For playing a single round)
+#     LOOP MATCH_LOOP WHILE GAME_OVER IS FALSE
 #
-#     METHOD check_winner()
-#         Define winning combinations (rows, columns, diagonals)
-#         FOR EACH combination
-#             IF grid matching combination elements are all equal AND not empty THEN
-#                 RETURN the winning symbol
-#             END IF
-#         END FOR
-#         RETURN null
-#     END METHOD
-# END CLASS
+#         // Print the board layout to the screen
+#         Print BOARD[0] | BOARD[1] | BOARD[2]
+#         Print ---------
+#         Print BOARD[3] | BOARD[4] | BOARD[5]
+#         Print ---------
+#         Print BOARD[6] | BOARD[7] | BOARD[8]
 #
-# CLASS Player
-#     PROPERTIES
-#         name: String
-#         symbol: String ("X" or "O")
-#         score: Integer
+#         // Get a valid move from the current player
+#         LOOP INPUT_LOOP
+#             Print CURRENT_PLAYER's name + ", pick a spot (1-9): "
+#             Read USER_INPUT
+#             Convert USER_INPUT to a number index (Subtract 1 to match 0-8 tracking)
 #
-#     METHOD initialize(name, symbol)
-#         Set name, symbol, and set score to 0
-#     END METHOD
-# END CLASS
-#
-# CLASS Game
-#     PROPERTIES
-#         board: Board Instance
-#         player1: Player Instance
-#         player2: Player Instance
-#         current_player: Player Instance
-#
-#     METHOD initialize()
-#         Get player details from user input
-#         Create player1 and player2
-#         Set current_player to player1
-#         Create new Board
-#     END METHOD
-#
-#     METHOD switch_turn()
-#         IF current_player is player1 THEN
-#             current_player = player2
-#         ELSE
-#             current_player = player1
-#         END IF
-#     END METHOD
-#
-#     METHOD play_turn()
-#         LOOP
-#             Display board
-#             Prompt current_player for a move (1-9)
-#             Convert input to array index (0-8)
-#             IF board.update_position(index, current_player.symbol) THEN
-#                 EXIT LOOP
+#             IF index is between 0 and 8 AND BOARD[index] is empty THEN
+#                 BOARD[index] = CURRENT_PLAYER's symbol
+#                 EXIT INPUT_LOOP
 #             ELSE
-#                 Print "Invalid move. Slot taken or out of bounds."
+#                 Print "Oops! That spot is taken or invalid. Try again."
 #             END IF
 #         END LOOP
-#     END METHOD
 #
-#     METHOD start_game_loop()
-#         LOOP (Game Reset Loop)
-#             Reset board
-#             LOOP (Turn Loop)
-#                 play_turn()
+#         // Check for a winner (All 8 possible matching lines)
+#         IF (BOARD[0] == BOARD[1] == BOARD[2] and not empty) OR
+#            (BOARD[3] == BOARD[4] == BOARD[5] and not empty) OR
+#            (BOARD[6] == BOARD[7] == BOARD[8] and not empty) OR
+#            (BOARD[0] == BOARD[3] == BOARD[6] and not empty) OR
+#            (BOARD[1] == BOARD[4] == BOARD[7] and not empty) OR
+#            (BOARD[2] == BOARD[5] == BOARD[8] and not empty) OR
+#            (BOARD[0] == BOARD[4] == BOARD[8] and not empty) OR
+#            (BOARD[2] == BOARD[4] == BOARD[6] and not empty) THEN
 #
-#                 IF board.check_winner() is not null THEN
-#                     Display board
-#                     Print current_player.name + " wins!"
-#                     Increment current_player.score
-#                     EXIT LOOP (Turn Loop)
-#                 END IF
+#             Print CURRENT_PLAYER's name + " wins this round! 🎉"
+#             Increment CURRENT_PLAYER's score by 1
+#             Set GAME_OVER to true
+#             EXIT MATCH_LOOP
+#         END IF
 #
-#                 IF board.is_full() THEN
-#                     Display board
-#                     Print "It's a tie!"
-#                     EXIT LOOP (Turn Loop)
-#                 END IF
+#         // Check for a tie
+#         IF BOARD has no empty spaces left THEN
+#             Print "It's a tie game! 🤝"
+#             Set GAME_OVER to true
+#             EXIT MATCH_LOOP
+#         END IF
 #
-#                 switch_turn()
-#             END LOOP
+#         // Switch turns if the game is still going
+#         IF CURRENT_PLAYER is Player 1 THEN
+#             CURRENT_PLAYER = Player 2
+#         ELSE
+#             CURRENT_PLAYER = Player 1
+#         END IF
 #
-#             Print overall scores and statistics
-#             Prompt user: "Play again? (y/n)"
-#             IF user answers "no" THEN
-#                 Print "Thanks for playing!"
-#                 EXIT LOOP (Game Reset Loop)
-#             END IF
-#         END LOOP
-#     END METHOD
-# END CLASS
+#     END LOOP
+#
+#     // 5. SCOREBOARD & REPLAY CHECK
+#     Print "=== CURRENT SCOREBOARD ==="
+#     Print Player 1's name + ": " + PLAYER_1_SCORE
+#     Print Player 2's name + ": " + PLAYER_2_SCORE
+#
+#     Print "Do you want to play another match? (y/n): "
+#     Read PLAY_AGAIN_INPUT
+#
+#     IF PLAY_AGAIN_INPUT is NOT "y" THEN
+#         Print "Thanks for playing! Goodbye!"
+#         EXIT REPLAY_LOOP
+#     END IF
+#
+# END LOOP
+#
+# END GAME
