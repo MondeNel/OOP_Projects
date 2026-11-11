@@ -1,21 +1,23 @@
+# frozen_string_literal: true
+
 # ==========================================
 # START GAME
 # ==========================================
 
 # 1. SET UP THE BOARD
-# Create an array with 9 empty spaces (" ") to represent the 3x3 grid.
-# Using Array.new(9, " ") is a clean Ruby way to avoid typing 9 empty strings manually.
+# Create an array with 9 empty spaces (' ') to represent the 3x3 grid.
+# Using Array.new(9, ' ') is a clean Ruby way to avoid typing 9 empty strings manually.
 board = Array.new(9, ' ')
 
 # 2. SET UP THE PLAYERS
 # Ask Player 1 for their name.
 # 'print' keeps the cursor on the same line, and '.chomp' removes the Enter key newline.
-puts "Enter Player 1's name (you will be X): "
+print "Enter Player 1's name (you will be X): "
 player_1_name = gets.chomp
 player_1_symbol = 'X'
 
 # Ask Player 2 for their name.
-puts "Enter Player 2's name (you will be O): "
+print "Enter Player 2's name (you will be O): "
 player_2_name = gets.chomp
 player_2_symbol = 'O'
 
@@ -23,8 +25,9 @@ player_2_symbol = 'O'
 player_1_score = 0
 player_2_score = 0
 
-# --- Temporary check to confirm Step 1 works (we will remove this in Step 2) ---
+# --- Temporary check to confirm Step 1 works (we will update this in later steps) ---
 puts "\nSetup complete! #{player_1_name} (#{player_1_symbol}) vs #{player_2_name} (#{player_2_symbol})"
+puts "Starting Score: #{player_1_score} - #{player_2_score}"
 puts "Board ready with #{board.length} spaces."
 
 # ==========================================
@@ -71,7 +74,7 @@ puts "Board ready with #{board.length} spaces."
 #        (BOARD[0] == BOARD[4] == BOARD[8] and not empty) OR
 #        (BOARD[2] == BOARD[4] == BOARD[6] and not empty) THEN
 #
-#       Print CURRENT_PLAYER's name + " wins this round!"
+#       Print CURRENT_PLAYER's name + " wins this round! 🎉"
 #       Increment CURRENT_PLAYER's score by 1
 #       Set GAME_OVER to true
 #       EXIT MATCH_LOOP
@@ -79,7 +82,7 @@ puts "Board ready with #{board.length} spaces."
 #
 #     // Check for a tie
 #     IF BOARD has no empty spaces left THEN
-#       Print "It's a tie game!"
+#       Print "It's a tie game! 🤝"
 #       Set GAME_OVER to true
 #       EXIT MATCH_LOOP
 #     END IF
