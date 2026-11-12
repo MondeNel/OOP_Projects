@@ -92,15 +92,8 @@ class Game
       reset_round
       play_round
 
-      # ==========================================
-      # REMAINING ROADMAP (PSEUDOCODE)
-      # ==========================================
-
-      #   // 5. SCOREBOARD & REPLAY CHECK
-      #   Print "=== CURRENT SCOREBOARD ==="
-      #   Print Player 1's name + ": " + PLAYER_1_SCORE
-      #   Print Player 2's name + ": " + PLAYER_2_SCORE
-
+      # 5. SCOREBOARD & REPLAY CHECK
+      display_scoreboard
       break unless play_again?
     end
 
@@ -176,6 +169,13 @@ class Game
   # Alternates the active player between Player 1 and Player 2.
   def switch_turn
     @current_player = @current_player == @player1 ? @player2 : @player1
+  end
+
+  # Prints the current match scores for both players.
+  def display_scoreboard
+    puts "\n=== CURRENT SCOREBOARD ==="
+    puts "#{@player1.name}: #{@player1.score}"
+    puts "#{@player2.name}: #{@player2.score}\n\n"
   end
 
   # Prompts players to decide if they want to play another round.
