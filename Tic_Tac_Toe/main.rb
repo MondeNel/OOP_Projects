@@ -12,7 +12,7 @@ class Game
     @player2 = make_player(2, 'O')
   end
 
-  # Play the rounds until the players stop.
+  # Plays rounds until the players stop.
   def start
     loop do
       play_round
@@ -42,19 +42,29 @@ class Game
       @board.display
       take_turn(current_player)
 
-      if @board.winner?(current_player.symbol)
-        @board.display
-        puts "#{current_player.name} wins this round!"
-        current_player.add_win
-        break
-      elsif @board.full?
-        @board.display
-        puts "It's a tie game!"
-        break
-      end
+      break if player_won?(current_player) || game_tied?
 
       current_player = other_player(current_player)
     end
+  end
+
+  # Announces a win and adds a point.
+  def player_won?(player)
+    return false unless @board.winner?(player.symbol)
+
+    @board.display
+    puts "#{player.name} wins this round!"
+    player.add_win
+    true
+  end
+
+  # Announces a tie.
+  def game_tied?
+    return false unless @board.full?
+
+    @board.display
+    puts "It's a tie game!"
+    true
   end
 
   # Gets a valid move from the player.
