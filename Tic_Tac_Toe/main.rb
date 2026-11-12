@@ -3,14 +3,16 @@
 require_relative 'player'
 require_relative 'board'
 
-# The game runs rounds and keeps track of whose turn it is.
+# Runs the game and keeps score.
 class Game
+  # Sets up the board and players.
   def initialize
     @board = Board.new
     @player1 = make_player(1, 'X')
     @player2 = make_player(2, 'O')
   end
 
+  # Play the rounds until the players stop.
   def start
     loop do
       play_round
@@ -23,16 +25,19 @@ class Game
 
   private
 
+  # Creates a player with a name and symbol.
   def make_player(number, symbol)
     print "Enter Player #{number}'s name (#{symbol}): "
     name = gets.chomp
     Player.new(name, symbol)
   end
 
+  # Plays one round.
   def play_round
     @board.reset
     current_player = @player1
 
+    # Keep taking turns until someone wins or the board is full.
     loop do
       @board.display
       take_turn(current_player)
@@ -52,6 +57,7 @@ class Game
     end
   end
 
+  # Gets a valid move from the player.
   def take_turn(player)
     loop do
       print "#{player.name} (#{player.symbol}), pick a spot (1-9): "
@@ -66,6 +72,7 @@ class Game
     end
   end
 
+  # Returns the other player.
   def other_player(player)
     if player == @player1
       @player2
@@ -74,12 +81,14 @@ class Game
     end
   end
 
+  # Prints both players' scores.
   def show_score
     puts "\n=== SCORE ==="
     puts "#{@player1.name}: #{@player1.score}"
     puts "#{@player2.name}: #{@player2.score}\n\n"
   end
 
+  # Asks if the players want another round.
   def play_again?
     print 'Play another round? (y/n): '
     gets.chomp.downcase == 'y'
