@@ -17,7 +17,7 @@ end
 # ==========================================
 # BOARD CLASS
 # ==========================================
-# Responsible only for managing the 3x3 grid state.
+# Responsible only for managing and displaying the 3x3 grid state.
 class Board
   attr_reader :spaces
 
@@ -28,6 +28,15 @@ class Board
   # Sets or clears all 9 spaces on the board to empty strings.
   def reset
     @spaces = Array.new(9, ' ')
+  end
+
+  # Prints the current 3x3 grid layout to the terminal.
+  def display
+    puts "\n #{@spaces[0]} | #{@spaces[1]} | #{@spaces[2]} "
+    puts '-----------'
+    puts " #{@spaces[3]} | #{@spaces[4]} | #{@spaces[5]} "
+    puts '-----------'
+    puts " #{@spaces[6]} | #{@spaces[7]} | #{@spaces[8]} \n\n"
   end
 end
 
@@ -47,29 +56,51 @@ class Game
 
   def start
     # 3. MASTER GAME LOOP (For replays)
-    # 'loop' creates the master replay cycle that runs until players quit.
     loop do
       reset_round
-
-      # --- Temporary check to confirm Step 3 works (we will update this in Step 4) ---
-      puts "\nStarting new match: #{@current_player.name} (#{@current_player.symbol}) goes first!"
-      puts "Scoreboard: #{@player1.name} (#{@player1.score}) - #{@player2.name} (#{@player2.score})"
-      puts "Game over status: #{@game_over}"
+      play_round
 
       # ==========================================
       # REMAINING ROADMAP (PSEUDOCODE)
       # ==========================================
 
-      #   // 4. MATCH TURN LOOP (For playing a single round)
-      #   LOOP MATCH_LOOP WHILE GAME_OVER IS FALSE
-      #
-      #     // Print the board layout to the screen
-      #     Print BOARD | BOARD | BOARD
-      #     Print ---------
-      #     Print BOARD | BOARD | BOARD
-      #     Print ---------
-      #     Print BOARD | BOARD | BOARD
-      #
+      #   // 5. SCOREBOARD & REPLAY CHECK
+      #   Print "=== CURRENT SCOREBOARD ==="
+      #   Print Player 1's name + ": " + PLAYER_1_SCORE
+      #   Print Player 2's name + ": " + PLAYER_2_SCORE
+
+      break unless play_again?
+    end
+
+    puts 'Thanks for playing! Goodbye!'
+  end
+
+  private
+
+  # Helper method kept private so only the Game class uses it during setup.
+  def create_player(number, symbol)
+    print "Enter Player #{number}'s name (you will be #{symbol}): "
+    name = gets.chomp
+    Player.new(name, symbol)
+  end
+
+  # Resets the board and turn tracking at the beginning of every match.
+  def reset_round
+    @board.reset
+    @current_player = @player1
+    @game_over = false
+  end
+
+  # 4. MATCH TURN LOOP (For playing a single round)
+  def play_round
+    until @game_over
+      # Print the board layout to the screen
+      @board.display
+
+      # ==========================================
+      # REMAINING ROADMAP (PSEUDOCODE)
+      # ==========================================
+
       #     // Get a valid move from the current player
       #     LOOP INPUT_LOOP
       #       Print CURRENT_PLAYER's name + ", pick a spot (1-9): "
@@ -113,40 +144,16 @@ class Game
       #     ELSE
       #       CURRENT_PLAYER = Player 1
       #     END IF
-      #
-      #   END LOOP
-      #
-      #   // 5. SCOREBOARD & REPLAY CHECK
-      #   Print "=== CURRENT SCOREBOARD ==="
-      #   Print Player 1's name + ": " + PLAYER_1_SCORE
-      #   Print Player 2's name + ": " + PLAYER_2_SCORE
 
-      # Conditional break satisfies RuboCop's Lint/UnreachableLoop check
-      break unless play_again?
+      # --- Temporary exit check so the match loop doesn't run forever yet ---
+      print 'End this test round? (y/n): '
+      @game_over = true if gets.chomp.downcase == 'y'
     end
-
-    puts 'Thanks for playing! Goodbye!'
   end
 
-  private
-
-  # Helper method kept private so only the Game class uses it during setup.
-  def create_player(number, symbol)
-    print "Enter Player #{number}'s name (you will be #{symbol}): "
-    name = gets.chomp
-    Player.new(name, symbol)
-  end
-
-  # Resets the board and turn tracking at the beginning of every match.
-  def reset_round
-    @board.reset
-    @current_player = @player1
-    @game_over = false
-  end
-
-  # Temporary prompt so the master loop has a real exit condition.
+  # Prompts players to decide if they want to play another round.
   def play_again?
-    print 'Test another loop iteration? (y/n): '
+    print 'Do you want to play another match? (y/n): '
     gets.chomp.downcase == 'y'
   end
 end
