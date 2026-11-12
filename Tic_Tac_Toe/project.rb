@@ -51,13 +51,10 @@ class Game
     loop do
       reset_round
 
-      # --- Temporary check to confirm Step 3 works (we will remove this in Step 4) ---
+      # --- Temporary check to confirm Step 3 works (we will update this in Step 4) ---
       puts "\nStarting new match: #{@current_player.name} (#{@current_player.symbol}) goes first!"
       puts "Scoreboard: #{@player1.name} (#{@player1.score}) - #{@player2.name} (#{@player2.score})"
       puts "Game over status: #{@game_over}"
-
-      # Temporary break so the loop doesn't run forever before Step 5 is coded.
-      break
 
       # ==========================================
       # REMAINING ROADMAP (PSEUDOCODE)
@@ -123,15 +120,12 @@ class Game
       #   Print "=== CURRENT SCOREBOARD ==="
       #   Print Player 1's name + ": " + PLAYER_1_SCORE
       #   Print Player 2's name + ": " + PLAYER_2_SCORE
-      #
-      #   Print "Do you want to play another match? (y/n): "
-      #   Read PLAY_AGAIN_INPUT
-      #
-      #   IF PLAY_AGAIN_INPUT is NOT "y" THEN
-      #     Print "Thanks for playing! Goodbye!"
-      #     EXIT REPLAY_LOOP
-      #   END IF
+
+      # Conditional break satisfies RuboCop's Lint/UnreachableLoop check
+      break unless play_again?
     end
+
+    puts 'Thanks for playing! Goodbye!'
   end
 
   private
@@ -148,6 +142,12 @@ class Game
     @board.reset
     @current_player = @player1
     @game_over = false
+  end
+
+  # Temporary prompt so the master loop has a real exit condition.
+  def play_again?
+    print 'Test another loop iteration? (y/n): '
+    gets.chomp.downcase == 'y'
   end
 end
 
