@@ -19,8 +19,6 @@ end
 # ==========================================
 # Responsible only for managing and displaying the 3x3 grid state.
 class Board
-  attr_reader :spaces
-
   def initialize
     reset
   end
@@ -32,11 +30,21 @@ class Board
 
   # Prints the current 3x3 grid layout to the terminal.
   def display
-    puts "\n #{@spaces[0]} | #{@spaces[1]} | #{@spaces[2]} "
+    puts "\n #{@spaces} | #{@spaces} | #{@spaces} "
     puts '-----------'
-    puts " #{@spaces[3]} | #{@spaces[4]} | #{@spaces[5]} "
+    puts " #{@spaces} | #{@spaces} | #{@spaces} "
     puts '-----------'
-    puts " #{@spaces[6]} | #{@spaces[7]} | #{@spaces[8]} \n\n"
+    puts " #{@spaces} | #{@spaces} | #{@spaces} \n\n"
+  end
+
+  # Checks that the chosen index is on the board (0-8) and currently empty.
+  def valid_move?(index)
+    index.between?(0, 8) && @spaces[index] == ' '
+  end
+
+  # Places the player's symbol ('X' or 'O') onto the chosen board space.
+  def place_mark(index, symbol)
+    @spaces[index] = symbol
   end
 end
 
@@ -94,27 +102,13 @@ class Game
   # 4. MATCH TURN LOOP (For playing a single round)
   def play_round
     until @game_over
-      # Print the board layout to the screen
       @board.display
+      take_turn
 
       # ==========================================
       # REMAINING ROADMAP (PSEUDOCODE)
       # ==========================================
 
-      #     // Get a valid move from the current player
-      #     LOOP INPUT_LOOP
-      #       Print CURRENT_PLAYER's name + ", pick a spot (1-9): "
-      #       Read USER_INPUT
-      #       Convert USER_INPUT to a number index (Subtract 1 to match 0-8 tracking)
-      #
-      #       IF index is between 0 and 8 AND BOARD[index] is empty THEN
-      #         BOARD[index] = CURRENT_PLAYER's symbol
-      #         EXIT INPUT_LOOP
-      #       ELSE
-      #         Print "Oops! That spot is taken or invalid. Try again."
-      #       END IF
-      #     END LOOP
-      #
       #     // Check for a winner (All 8 possible matching lines)
       #     IF (BOARD == BOARD == BOARD and not empty) OR
       #        (BOARD == BOARD == BOARD and not empty) OR
@@ -145,9 +139,25 @@ class Game
       #       CURRENT_PLAYER = Player 1
       #     END IF
 
-      # --- Temporary exit check so the match loop doesn't run forever yet ---
+      # --- Temporary exit check until win/tie/turn-switch logic is added ---
+      @board.display
       print 'End this test round? (y/n): '
       @game_over = true if gets.chomp.downcase == 'y'
+    end
+  end
+
+  # Prompts the current player until they enter a valid, open spot (1-9).
+  def take_turn
+    loop do
+      print "#{@current_player.name} (#{@current_player.symbol}), pick a spot (1-9): "
+      index = gets.chomp.to_i - 1
+
+      if @board.valid_move?(index)
+        @board.place_mark(index, @current_player.symbol)
+        break
+      end
+
+      puts 'Oops! That spot is taken or invalid. Try again.'
     end
   end
 
