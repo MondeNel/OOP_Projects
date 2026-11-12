@@ -12,6 +12,11 @@ class Player
     @symbol = symbol
     @score = 0
   end
+
+  # Increases the player's score by 1 when they win a round.
+  def increment_score
+    @score += 1
+  end
 end
 
 # ==========================================
@@ -19,6 +24,13 @@ end
 # ==========================================
 # Responsible only for managing and displaying the 3x3 grid state.
 class Board
+  # All 8 possible winning combinations (3 rows, 3 columns, 2 diagonals).
+  WINNING_LINES = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], # Rows
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], # Columns
+    [0, 4, 8], [2, 4, 6] # Diagonals
+  ].freeze
+
   def initialize
     reset
   end
@@ -30,11 +42,11 @@ class Board
 
   # Prints the current 3x3 grid layout to the terminal.
   def display
-    puts "\n #{@spaces} | #{@spaces} | #{@spaces} "
+    puts "\n #{@spaces.at(0)} | #{@spaces.at(1)} | #{@spaces.at(2)} "
     puts '-----------'
-    puts " #{@spaces} | #{@spaces} | #{@spaces} "
+    puts " #{@spaces.at(3)} | #{@spaces.at(4)} | #{@spaces.at(5)} "
     puts '-----------'
-    puts " #{@spaces} | #{@spaces} | #{@spaces} \n\n"
+    puts " #{@spaces.at(6)} | #{@spaces.at(7)} | #{@spaces.at(8)} \n\n"
   end
 
   # Checks that the chosen index is on the board (0-8) and currently empty.
@@ -45,6 +57,18 @@ class Board
   # Places the player's symbol ('X' or 'O') onto the chosen board space.
   def place_mark(index, symbol)
     @spaces[index] = symbol
+  end
+
+  # Returns true if any winning line is completely filled with the given symbol.
+  def winner?(symbol)
+    WINNING_LINES.any? do |line|
+      line.all? { |index| @spaces[index] == symbol }
+    end
+  end
+
+  # Returns true if there are no empty spaces left on the board.
+  def full?
+    !@spaces.include?(' ')
   end
 end
 
@@ -104,45 +128,7 @@ class Game
     until @game_over
       @board.display
       take_turn
-
-      # ==========================================
-      # REMAINING ROADMAP (PSEUDOCODE)
-      # ==========================================
-
-      #     // Check for a winner (All 8 possible matching lines)
-      #     IF (BOARD == BOARD == BOARD and not empty) OR
-      #        (BOARD == BOARD == BOARD and not empty) OR
-      #        (BOARD == BOARD == BOARD and not empty) OR
-      #        (BOARD == BOARD == BOARD and not empty) OR
-      #        (BOARD == BOARD == BOARD and not empty) OR
-      #        (BOARD == BOARD == BOARD and not empty) OR
-      #        (BOARD == BOARD == BOARD and not empty) OR
-      #        (BOARD == BOARD == BOARD and not empty) THEN
-      #
-      #       Print CURRENT_PLAYER's name + " wins this round!"
-      #       Increment CURRENT_PLAYER's score by 1
-      #       Set GAME_OVER to true
-      #       EXIT MATCH_LOOP
-      #     END IF
-      #
-      #     // Check for a tie
-      #     IF BOARD has no empty spaces left THEN
-      #       Print "It's a tie game!"
-      #       Set GAME_OVER to true
-      #       EXIT MATCH_LOOP
-      #     END IF
-      #
-      #     // Switch turns if the game is still going
-      #     IF CURRENT_PLAYER is Player 1 THEN
-      #       CURRENT_PLAYER = Player 2
-      #     ELSE
-      #       CURRENT_PLAYER = Player 1
-      #     END IF
-
-      # --- Temporary exit check until win/tie/turn-switch logic is added ---
-      @board.display
-      print 'End this test round? (y/n): '
-      @game_over = true if gets.chomp.downcase == 'y'
+      evaluate_turn
     end
   end
 
@@ -159,6 +145,37 @@ class Game
 
       puts 'Oops! That spot is taken or invalid. Try again.'
     end
+  end
+
+  # Checks for a win or tie after a move; switches turns if the round continues.
+  def evaluate_turn
+    if @board.winner?(@current_player.symbol)
+      handle_win
+    elsif @board.full?
+      handle_tie
+    else
+      switch_turn
+    end
+  end
+
+  # Announces the round winner, updates their score, and ends the current round.
+  def handle_win
+    @board.display
+    puts "#{@current_player.name} wins this round!"
+    @current_player.increment_score
+    @game_over = true
+  end
+
+  # Announces a tie game and ends the current round.
+  def handle_tie
+    @board.display
+    puts "It's a tie game!"
+    @game_over = true
+  end
+
+  # Alternates the active player between Player 1 and Player 2.
+  def switch_turn
+    @current_player = @current_player == @player1 ? @player2 : @player1
   end
 
   # Prompts players to decide if they want to play another round.
